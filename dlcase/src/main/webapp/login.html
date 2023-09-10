@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+    <link href="css/login.css" rel="stylesheet">
+</head>
+
+<body>
+<div id="loginDiv" style="height: 350px">
+    <div id="form">
+        <h1 id="loginMsg">用户登录</h1>
+        <div id="errorMsg">{{errorMsg}}</div>
+        <p>用户名称:<input id="username"  type="text" v-model="username"></p>
+
+        <p>用户密码:<input id="password" type="password" v-model="password"></p>
+        <p>记住选择:<input id="remember"  type="checkbox" v-model="remember" ></p>
+        <div id="subDiv">
+            <input type="submit" class="button" value="登  录" @click="login">
+            <input type="reset" class="button" value="重  置">&nbsp;&nbsp;&nbsp;
+            <a href="register.html">没有账号？</a>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script src="./js/axios-0.18.0.js"></script>
+<script src="./js/baseUrl.js"></script>
+<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+<script>
+    axios.defaults.withCredentials = true;
+
+    new Vue({
+        el: "#loginDiv",
+        data:{
+             username:"",
+             password:"",
+             remember:false,
+              errorMsg:""
+        },
+        mounted(){
+           this.cookieValue();
+        },
+        methods:{
+
+            cookieValue(){
+                let cookie=document.cookie.split(";");
+                cookie.map(item=>{
+                    let keyValue=item.split("=");
+                    let key=keyValue[0].trim();
+                    let value=keyValue[1].trim();
+                    this[key]=value;
+                })
+                if(this.remember=="false"){
+                    this.remember=false;
+                    this.username="";
+                    this.password="";
+                }
+            },
+            login(){
+
+                let data={
+                    "username":this.username,
+                    "password":this.password,
+                    "remember":this.remember,
+                }
+                axios({
+                    method:"post",
+                    url:baseUrl+"/user/login",
+                    data
+                }).then((res)=>{
+                    if(res.data=="success"){
+                        alert("登录成功");
+                        location.href="brand.html";
+                    }else{
+                        this.errorMsg=res.data;
+                    }
+                })
+            }
+        }
+    })
+</script>
+</html>

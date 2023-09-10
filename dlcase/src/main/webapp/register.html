@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎注册</title>
+    <link href="css/register.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="form-div">
+    <div class="reg-content">
+        <h1>欢迎注册</h1>
+        <span>已有帐号？</span> <a href="login.html">登录</a>
+    </div>
+    <div id="reg-form" >
+
+        <table>
+
+            <tr>
+                <td>用户名</td>
+                <td class="inputs">
+                    <input name="username" type="text" id="username" v-model="username">
+                    <br>
+                    <span id="username_err" class="err_msg" >{{nameError}}</span>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>密码</td>
+                <td class="inputs">
+                    <input name="password" type="password" id="password" v-model="password">
+                    <br>
+                    <span id="password_err" class="err_msg">{{pwdError}}</span>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>验证码</td>
+                <td class="inputs">
+                    <input name="checkCode" type="text" id="checkCode" v-model="checkCode">
+                    <img :src="imgSrc">
+                    <a id="changeImg" @click.prevent="changeCode" style="cursor: pointer;">看不清？</a>
+                    <br>
+                    <span id="password_err" class="err_msg">{{codeError}}</span>
+
+                </td>
+            </tr>
+        </table>
+
+        <div class="buttons">
+            <input value="注 册" type="submit" id="reg_btn" @click="register">
+        </div>
+        <br class="clear">
+    </div>
+
+</div>
+</body>
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script src="./js/axios-0.18.0.js"></script>
+<script src="./js/baseUrl.js"></script>
+<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+<script>
+    new Vue({
+        el: "#reg-form",
+        data:{
+            imgSrc:baseUrl+"/user/checkCode",
+            username:"",
+            password:"",
+            checkCode:"",
+            nameError:"",
+            pwdError:"",
+            codeError:""
+        },
+        mounted(){
+        },
+        methods:{
+            changeCode(){
+               this.imgSrc=baseUrl+"/user/checkCode?"+Math.random()+"";
+            },
+            register(){
+                let data={
+                    "username":this.username,
+                    "password":this.password,
+                    "checkCode":this.checkCode,
+                }
+                axios({
+                    method:"post",
+                    url:baseUrl+"/user/register",
+                    data
+                }).then((res)=>{
+                    let str=res.data;
+                    console.log(str);
+                    if(str=="success"){
+                        alert("注册成功");
+                        location.href="login.html";
+                    }else if(str=="0"){
+                        this.nameError="用户名为空"
+                    }else if(str=="1"){
+                        this.pwdError="密码为空"
+                    }else if(str=="2"){
+                        this.nameError="用户名已存在"
+                    }else{
+                        this.codeError=str;
+                    }
+                })
+            }
+        }
+    })
+</script>
+</html>
